@@ -54,8 +54,8 @@ This separation of concerns makes the code more maintainable and testable.
 
 1. Clone the repository:
    ```
-   git clone <repository-url>
-   cd task-manager
+   git clone https://github.com/alwihar/sware-task-manager.git
+   cd sware-task-manager
    ```
 
 2. Install dependencies:
@@ -84,4 +84,3 @@ This separation of concerns makes the code more maintainable and testable.
 ## License
 
 MIT
-
