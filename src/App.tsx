@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import AddTaskForm from './components/AddTaskForm';
 import TaskList from './components/TaskList';
 import { useTasks } from './hooks/useTasks';
 import { motion } from 'framer-motion';
+import { TaskProvider } from './context/TaskContext';
 
 function App() {
+  return (
+    <TaskProvider>
+      <AppContent />
+    </TaskProvider>
+  );
+}
+
+// separate component to use the context
+function AppContent() {
   const { tasks, loading, error, addTask, toggleTask, deleteTask } = useTasks();
+
+  const handleAddTask = useCallback((title: string) => {
+    addTask(title);
+  }, [addTask]);
+
+  const handleToggleTask = useCallback((id: number) => {
+    toggleTask(id);
+  }, [toggleTask]);
+
+  const handleDeleteTask = useCallback((id: number) => {
+    deleteTask(id);
+  }, [deleteTask]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 via-purple-50 to-accent-50">
@@ -22,7 +44,7 @@ function App() {
           <p className="text-gray-600">Organize your tasks efficiently</p>
         </motion.div>
         
-        <AddTaskForm onAdd={addTask} />
+        <AddTaskForm onAdd={handleAddTask} />
         
         {loading ? (
           <motion.div 
@@ -48,8 +70,8 @@ function App() {
         ) : (
           <TaskList 
             tasks={tasks} 
-            onToggle={toggleTask} 
-            onDelete={deleteTask} 
+            onToggle={handleToggleTask} 
+            onDelete={handleDeleteTask} 
           />
         )}
       </div>

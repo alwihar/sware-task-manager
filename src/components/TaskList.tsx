@@ -38,8 +38,10 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="p-8 text-center bg-white rounded-xl shadow-md"
+        role="status"
+        aria-label="No tasks available"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto mb-4 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto mb-4 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
         <p className="text-xl font-medium text-brand-500">No tasks yet</p>
@@ -89,10 +91,19 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
         className="p-5 bg-white rounded-xl shadow-md"
       >
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-500">Progress</h3>
-          <span className="text-sm font-medium text-accent-600">{completedTasks}/{totalTasks} completed</span>
+          <h3 className="text-sm font-medium text-gray-500" id="progress-label">Progress</h3>
+          <span className="text-sm font-medium text-accent-600" aria-live="polite" aria-atomic="true">
+            {completedTasks}/{totalTasks} completed
+          </span>
         </div>
-        <div className="w-full h-2 bg-gray-200 rounded-full">
+        <div 
+          className="w-full h-2 bg-gray-200 rounded-full"
+          role="progressbar"
+          aria-valuenow={progressPercentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-labelledby="progress-label"
+        >
           <motion.div 
             className="h-2 bg-gradient-to-r from-brand-400 to-accent-500 rounded-full"
             initial={{ width: 0 }}
@@ -109,6 +120,8 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="relative p-6 mb-6 text-center bg-gradient-to-r from-brand-100 to-accent-100 rounded-xl shadow-md overflow-hidden"
+          role="alert"
+          aria-live="assertive"
         >
           <motion.div
             animate={{ 
@@ -122,7 +135,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
             }}
             className="mb-4"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </motion.div>
@@ -136,6 +149,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
               variants={confettiVariants}
               initial="hidden"
               animate="visible"
+              aria-hidden="true"
             >
               {[...Array(20)].map((_, i) => (
                 <motion.div
@@ -154,16 +168,22 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onDelete }) => {
       )}
 
       {/* Task list */}
-      <AnimatePresence>
-        {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            onToggle={onToggle}
-            onDelete={onDelete}
-          />
-        ))}
-      </AnimatePresence>
+      <section aria-label="Task list">
+        <h2 className="sr-only">Your tasks</h2>
+        <ul className="list-none p-0 m-0">
+          <AnimatePresence>
+            {tasks.map((task) => (
+              <li key={task.id}>
+                <TaskItem
+                  task={task}
+                  onToggle={onToggle}
+                  onDelete={onDelete}
+                />
+              </li>
+            ))}
+          </AnimatePresence>
+        </ul>
+      </section>
     </div>
   );
 };

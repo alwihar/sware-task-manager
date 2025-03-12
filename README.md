@@ -20,6 +20,7 @@ A modern Task Manager application built with React, TypeScript, and Tailwind CSS
 - **Tailwind CSS**: For styling
 - **Framer Motion**: For animations
 - **Local Storage API**: For data persistence
+- **Context API**: For state management
 
 ## Project Structure
 
@@ -27,10 +28,27 @@ A modern Task Manager application built with React, TypeScript, and Tailwind CSS
   - `AddTaskForm.tsx`: Component for adding new tasks
   - `TaskItem.tsx`: Component for displaying individual tasks
   - `TaskList.tsx`: Component for displaying the list of tasks
+- `src/context`: React context for state management
+  - `TaskContext.tsx`: Context provider for task state
 - `src/hooks`: Custom React hooks
-  - `useTasks.ts`: Hook for managing tasks with local storage persistence
+  - `useTasks.ts`: Hook for accessing task context
+- `src/services`: Service layer
+  - `taskService.ts`: Service for task operations (API, storage)
 - `src/types`: TypeScript interfaces
   - `Task.ts`: Interface for the Task model
+- `src/utils`: Utility functions
+  - `errorUtils.ts`: Error handling utilities
+
+## Architecture
+
+The application follows a clean architecture approach:
+
+1. **Presentation Layer**: React components that render the UI
+2. **State Management**: Context API for managing application state
+3. **Service Layer**: Abstracts API and storage operations
+4. **Utilities**: Reusable helper functions
+
+This separation of concerns makes the code more maintainable and testable.
 
 ## Setup Instructions
 

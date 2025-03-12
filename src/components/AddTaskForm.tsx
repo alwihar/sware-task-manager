@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 interface AddTaskFormProps {
@@ -8,14 +8,43 @@ interface AddTaskFormProps {
 const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAdd }) => {
   const [title, setTitle] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const validateTitle = (value: string): boolean => {
+    // Clear previous error
+    setError(null);
+    
+    // Check if empty
+    if (!value.trim()) {
+      setError('Task title cannot be empty');
+      return false;
+    }
+    
+    // Check if too long
+    if (value.trim().length > 100) {
+      setError('Task title is too long (maximum 100 characters)');
+      return false;
+    }
+    
+    return true;
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+    // Clear error when user types
+    if (error) {
+      setError(null);
+    }
+  }, [error]);
+
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim()) {
+    
+    if (validateTitle(title)) {
       onAdd(title.trim());
       setTitle('');
     }
-  };
+  }, [title, onAdd]);
 
   return (
     <motion.div
@@ -25,16 +54,22 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAdd }) => {
       className="mb-8"
     >
       <form onSubmit={handleSubmit} className="relative">
-        <div className={`p-1 transition-all duration-300 bg-white rounded-xl shadow-md ${isInputFocused ? 'ring-2 ring-brand-400 ring-opacity-50' : ''}`}>
+        <div className={`p-1 transition-all duration-300 bg-white rounded-xl shadow-md ${
+          isInputFocused ? 'ring-2 ring-brand-400 ring-opacity-50' : 
+          error ? 'ring-2 ring-rose-400 ring-opacity-50' : ''
+        }`}>
           <div className="flex items-center">
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleChange}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
               placeholder="Add a new task..."
               className="flex-grow p-4 text-gray-700 bg-transparent border-none rounded-l-xl focus:outline-none"
+              aria-invalid={error ? 'true' : 'false'}
+              aria-describedby={error ? 'task-error-message' : undefined}
+              maxLength={100}
             />
             <motion.button
               type="submit"
@@ -51,6 +86,18 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAdd }) => {
             </motion.button>
           </div>
         </div>
+        
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            id="task-error-message"
+            className="mt-2 text-sm text-rose-500"
+            role="alert"
+          >
+            {error}
+          </motion.p>
+        )}
       </form>
     </motion.div>
   );
